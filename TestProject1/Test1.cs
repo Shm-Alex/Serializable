@@ -32,13 +32,14 @@ namespace TestProject1
         protected abstract TReturn Sut(TInput input);
         public string Serialise() =>
                  $@"
-        {nameof(TestInput)}:{TestInput.Serialise()}
-        {nameof(ExpectedReturn)}:{ExpectedReturn.Serialise()}
-        {nameof(expectedExcepion)}:{expectedExcepion.Serialise()}";
-        public void TestCase()
+        {nameof(TestInput)}:{TestInput?.Serialise()}
+        {nameof(ExpectedReturn)}:{ExpectedReturn?.Serialise()}
+        {nameof(expectedExcepion)}:{expectedExcepion?.Serialise()}";
+        public void TestCase(TestContext testContext)
         {
 
             //Exception? thrownExcepion; ;
+            testContext.WriteLine(this.Serialise());
             try
             {
                 var ret = Sut(TestInput);
@@ -85,36 +86,37 @@ namespace TestProject1
     [TestClass]
     public sealed class Test1
     {
+        public TestContext TestContext { get; set; }
         [TestMethod]
         public void PassedTestCase()
         {
             var test = new SimpleTest() {expectedExcepion=null,TestInput=new Input() { Value =10},ExpectedReturn= new Return() { Value=10}  };
-            test.TestCase();
+            test.TestCase(TestContext);
         }
         [TestMethod]
         public void FailedTestcase()
         {
             var test = new SimpleTest() { expectedExcepion = null, TestInput = new Input() { Value = 11 }, ExpectedReturn = new Return() { Value = 10 } };
-            test.TestCase();
+            test.TestCase(TestContext);
 
         }
         [TestMethod]
         public void PassedAbnormalTestcase()
         {
             var test = new SimpleTest() { expectedExcepion = new SimpleException("Упс 0! "), TestInput = new Input() { Value = 0 }, };
-            test.TestCase();
+            test.TestCase(TestContext);
         }
         [TestMethod]
         public void FailedAbnormalTestcase()
         {
             var test = new SimpleTest() { expectedExcepion = null, TestInput = new Input() { Value = 0 }, };
-            test.TestCase();
+            test.TestCase(TestContext);
         }
         [TestMethod]
         public void FailedAbnormalTestcase1()
         {
             var test = new SimpleTest() { expectedExcepion = new BaseExceptionForTest("Упс 0! "), TestInput = new Input() { Value = 0 }, };
-            test.TestCase();
+            test.TestCase(TestContext);
         }
     }
 }
